@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "author": "tposik",
+  "name": "Augmentation",
+  "version": "1.0",
+
+  "description": "...",
+
+	"content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": [ "content_scripts/main.js"]
+  }],
+
+	"browser_action": {
+		"default_icon": {
+			"64": "resources/logo-64.png"
+		},
+		"default_title": "Augmentation"
+	},
+
+	"background": {
+		"scripts": []
+	},
+
+	"permissions": [
+		"<all_urls>",
+	    "webRequest"
+	  ]
+  }
