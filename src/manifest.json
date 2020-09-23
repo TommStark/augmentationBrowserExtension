@@ -19,11 +19,13 @@
 	},
 
 	"background": {
-		"scripts": []
+		"scripts": ["background_scripts/main.js"],
+		"persistent": false
 	},
 
 	"permissions": [
 		"<all_urls>",
-	    "webRequest"
+			"webRequest",
+			"tabs"
 	  ]
   }
