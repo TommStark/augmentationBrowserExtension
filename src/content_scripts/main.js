@@ -1,12 +1,38 @@
-//regex and method to find the search value
-const urlParams = new URLSearchParams(window.location.search);
-if(urlParams.has('q')){
-  const searchQuery =  urlParams.get('q');
-  browser.runtime.sendMessage(searchQuery)
+
+class ContentPageManager{
+  constructor(){
+  }
+
+  getSearchQuery(){
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('q')){
+      const searchQuery =  urlParams.get('q');
+      browser.runtime.sendMessage(searchQuery)
+      console.log(searchQuery);
+    }
+  }
+
+  handleMessage(serverResults){
+    //result from current search engine
+    let searchEngineResults = Array.from(document.getElementsByClassName('r')).map(r => r.getElementsByTagName('a')[0]);
+   
+    for( const result of searchEngineResults){
+      let url = result.href;
+      const queryExists = (serverResults.item.results).findIndex((element) => {
+        return element === url
+      })
+        result.insertAdjacentHTML( 'beforeend',
+        '<div> <div style="background-color:'+ serverResults.item.color +'; position: absolute; top: 0; right: 0;"> <p style="font-size:15px; color: white; margin: 0; padding: 2px 9px 2px 9px; ">'+ `${queryExists >=0 ? queryExists+1 : '-'}`+'</p></div>')
+      }
+    }
 }
 
-
-browser.runtime.onMessage.addListener(handleMessage)
-function handleMessage(request, sender, sendResponse){
-  console.log(request);
+function init(){
+  let pageManager = new ContentPageManager();
+  pageManager.getSearchQuery();
+  browser.runtime.onMessage.addListener(request =>{
+    pageManager.handleMessage(request)
+  })
 }
+
+init();

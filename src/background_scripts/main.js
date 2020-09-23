@@ -1,31 +1,40 @@
-console.log('from background')
-
-browser.runtime.onMessage.addListener(handleMessage)
-
-function handleMessage(request, sender, sendResponse){
-  console.log(request);
-
-  let xhr = new XMLHttpRequest();
-
-  xhr.onload = function () {
-    let results = Array.from(this.responseXML.getElementsByClassName('result')).map(result=> result.getElementsByClassName('result__a')[0].href)
-    testResult(results)
+class BackgroundService{
+  constructor() {
   }
-  xhr.open('GET', `https://duckduckgo.com/html/?q=${request}`, true)
-  xhr.responseType = 'document';
-  xhr.send();
+
+  getCurrentTab() {
+    return browser.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+  }
+
+  testResult(item){
+    console.log(`RESULTADOS: ${item.results}`)
+    this.getCurrentTab().then((tabs) => {
+      browser.tabs.sendMessage(tabs[0].id, {item});
+    });
+  }
+
+  handleMessage(request){
+    let object = {engine:'duck',color:'#de5833',results:[]}
+    let requestQuery = new XMLHttpRequest();
+    requestQuery.onload = () => {
+      let requestResults = Array.from(requestQuery.responseXML.getElementsByClassName('result')).map(result=> result.getElementsByClassName('result__a')[0].href);
+        object.results.push(...requestResults) 
+      this.testResult(object);
+    }
+    requestQuery.open('GET', `https://duckduckgo.com/html/?q=${request}`, true)
+    requestQuery.responseType = 'document';
+    requestQuery.send();
+  }
 }
 
-function getCurrentTab() {
-  return browser.tabs.query({
-    active: true,
-    currentWindow: true
-  });
+function startBackground(){
+  let service = new BackgroundService();
+  browser.runtime.onMessage.addListener(request =>{
+    service.handleMessage(request)
+  })
 }
 
-function testResult(results){
-  console.log(results)
-  this.getCurrentTab().then((tabs) => {
-    browser.tabs.sendMessage(tabs[0].id, {results});
-  });
-}
+startBackground();
