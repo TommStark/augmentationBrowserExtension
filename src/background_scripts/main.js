@@ -9,10 +9,15 @@ class BackgroundService{
     });
   }
 
-  testResult(item){
-    console.log(`RESULTADOS: ${item.results}`)
+  testResult(response){
+    try{
+      browser.storage.local.set({[response.engine]: JSON.stringify(response.results)});
+    }
+    catch(error){
+      console.log(error);
+    }
     this.getCurrentTab().then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, {item});
+      browser.tabs.sendMessage(tabs[0].id, {response});
     });
   }
 
@@ -21,6 +26,7 @@ class BackgroundService{
     let requestQuery = new XMLHttpRequest();
     requestQuery.onload = () => {
       let requestResults = Array.from(requestQuery.responseXML.getElementsByClassName('result')).map(result=> result.getElementsByClassName('result__a')[0].href);
+      requestResults = requestResults.filter( result => !result.startsWith('https://duckduckgo.com/y.js'));
         object.results.push(...requestResults) 
       this.testResult(object);
     }

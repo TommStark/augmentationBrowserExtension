@@ -15,17 +15,19 @@
 		"default_icon": {
 			"64": "resources/logo-64.png"
 		},
-		"default_title": "Augmentation"
+		"default_title": "Augmentation",
+		"default_popup":"options/popUp.html"
 	},
 
 	"background": {
 		"scripts": ["background_scripts/main.js"],
 		"persistent": false
 	},
-
+	
 	"permissions": [
 		"<all_urls>",
-			"webRequest",
-			"tabs"
+	    "webRequest",
+	    "tabs",
+	    "storage"
 	  ]
   }
