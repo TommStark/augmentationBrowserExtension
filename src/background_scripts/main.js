@@ -36,6 +36,8 @@ class Result{
     });
   }
 
+  getLinksElements(){}
+
   sayHi(){
     console.log(`[HELLO]: hi Im ${this.engine}`);
   }
@@ -79,7 +81,7 @@ class Google extends Result{
   }
 
   getLinksElements(requestQuery){
-    return Array.from(requestQuery.responseXML.getElementsByClassName('r')).map(result => result.getElementsByTagName('a')[0].href);
+    return Array.from(requestQuery.responseXML.getElementsByClassName('rc')).map(result => result.getElementsByTagName('a')[0].href);
   }
 
 }

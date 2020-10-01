@@ -1,7 +1,44 @@
 const searchEngine = (window.location.origin).match(/^https?\:\/\/(?:www\.)?([^\/?#]+)?\.com$/i)[1];
 
+class strategyManager{
+  constructor(strategy){
+   this.strategy = strategy;
+  }
+
+  getLinkList(){
+    return this.strategy.getLinkList();
+  }
+}
+
+class Google {
+  getLinkList(){
+    return Array.from(document.getElementsByClassName('rc')).map(result => result.getElementsByTagName('a')[0]);
+  }
+}
+
+class Bing {
+  getLinkList(){
+    return Array.from(document.getElementsByClassName('b_algo')).map(result => result.getElementsByTagName('a')[0]);
+  }
+}
+
+class Duck {
+  getLinkList(){
+    return Array.from(document.getElementsByClassName('result')).map(result=> result.getElementsByClassName('result__a')[0]);
+  }
+}
+
 class ContentPageManager{
   constructor(){
+  }
+
+  setSearchEngine(){
+    let classes = {
+      google     : Google,
+      bing       : Bing,
+      duckduckgo : Duck
+    }
+    return new classes[searchEngine]();
   }
 
   getSearchQuery(){
@@ -12,34 +49,24 @@ class ContentPageManager{
     }
   }
 
-  handleMessage(serverResults){
-    //TODO make this scalable for other search engines
+  handleMessage(serverResults,manager){
+
     if(searchEngine == serverResults.response.engine){
       return;
     }
-    let searchEngineResults = Array.from(document.getElementsByClassName('r')).map(r => r.getElementsByTagName('a')[0]);
-    let rigthPx = '0';
 
-    for( const result of searchEngineResults){
+    let searchList = manager.getLinkList();
+
+    for( const result of searchList){
       if (result){
         let url = result.href;
         const queryExists = (serverResults.response.results).findIndex((element) => {
           return element === url
         })
-          // TODO fix this
-          switch (serverResults.response.engine) {
-            case 'google':
-              rigthPx = '80px'
-              break;
-            case 'bing':
-              rigthPx = '40px'
-              break;
-            default:
-              break;
-          }
+
           result.insertAdjacentHTML( 'beforeend',
-            '<div><div style="background-color:'+ serverResults.response.color +`; position: absolute; top: 0; right: ${rigthPx};"> <p style="font-size:15px; color: white; margin: 0; padding: 2px 9px 2px 9px; "> ${queryExists >=0 ? queryExists+1 : '-'}`+'</p></div>')
-        }
+            '<div class=' + serverResults.response.engine +' style="display:flex; justify-content:right;"><div style="background-color:'+ serverResults.response.color +`;"> <p style="font-size:15px; color: white; margin: 0; padding: 2px 10px 2px 9px; "> ${queryExists >=0 ? queryExists+1 : ' -'}`+'</p></div>')
+          }
       }
     }
 }
@@ -47,8 +74,9 @@ class ContentPageManager{
 function init(){
   let pageManager = new ContentPageManager();
   pageManager.getSearchQuery();
+  let manager = new strategyManager(pageManager.setSearchEngine());
   browser.runtime.onMessage.addListener(request =>{
-    pageManager.handleMessage(request)
+    pageManager.handleMessage(request,manager)
   })
 }
 
