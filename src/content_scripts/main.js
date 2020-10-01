@@ -59,11 +59,13 @@ class ContentPageManager{
 
     for( const result of searchList){
       if (result){
-        let url = result.href;
-        const queryExists = (serverResults.response.results).findIndex((element) => {
-          return element === url
-        })
 
+        let resultURL = (result.href).replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+
+        const queryExists = (serverResults.response.results).findIndex((element) => {
+          let urlprocess = element.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0];
+          return urlprocess == resultURL
+        })
           result.insertAdjacentHTML( 'beforeend',
             '<div class=' + serverResults.response.engine +' style="display:flex; justify-content:right;"><div style="background-color:'+ serverResults.response.color +`;"> <p style="font-size:15px; color: white; margin: 0; padding: 2px 10px 2px 9px; "> ${queryExists >=0 ? queryExists+1 : ' -'}`+'</p></div>')
           }
