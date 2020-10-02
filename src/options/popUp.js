@@ -1,6 +1,3 @@
-
-//TODO Fix This
-
 function createElement(link, text){
   if (link){
     let listItem = document.createElement('li')
@@ -23,4 +20,4 @@ browser.storage.local.get("duckduckgo").then((result) => {
     })
   });
 });
-;
+

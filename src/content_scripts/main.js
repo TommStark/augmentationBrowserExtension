@@ -50,18 +50,13 @@ class ContentPageManager{
   }
 
   handleMessage(serverResults,manager){
-
     if(searchEngine == serverResults.response.engine){
       return;
     }
-
     let searchList = manager.getLinkList();
-
     for( const result of searchList){
       if (result){
-
         let resultURL = (result.href).replace(/^(?:https?:\/\/)?(?:www\.)?/i, "");
-
         const queryExists = (serverResults.response.results).findIndex((element) => {
           let urlprocess = element.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "");
           return urlprocess === resultURL

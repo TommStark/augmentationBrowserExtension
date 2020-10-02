@@ -36,12 +36,9 @@ class Result{
     });
   }
 
-  getLinksElements(){}
-
-  sayHi(){
-    console.log(`[HELLO]: hi Im ${this.engine}`);
+  //abstract method
+  getLinksElements(){
   }
-
 }
 
 class Duck extends Result {
@@ -55,7 +52,6 @@ class Duck extends Result {
   getLinksElements(requestQuery){
     return ((Array.from(requestQuery.responseXML.getElementsByClassName('result')).map(result=> result.getElementsByClassName('result__a')[0].href)).filter( result => !result.startsWith('https://duckduckgo.com/y.js'))).splice(0,10);
   }
-
 }
 
 class Bing extends Result{
@@ -69,7 +65,6 @@ class Bing extends Result{
   getLinksElements(requestQuery){
     return Array.from(requestQuery.responseXML.getElementsByClassName('b_algo')).map(result => result.getElementsByTagName('a')[0].href);
   }
-
 }
 
 class Google extends Result{
@@ -83,7 +78,6 @@ class Google extends Result{
   getLinksElements(requestQuery){
     return Array.from(requestQuery.responseXML.getElementsByClassName('rc')).map(result => result.getElementsByTagName('a')[0].href);
   }
-
 }
 
 
